@@ -1,3 +1,4 @@
+
 sub Main()
   showChannelSGScreen()
 end sub
@@ -6,7 +7,7 @@ sub showChannelSGScreen()
   screen = CreateObject("roSGScreen")
   m.port = CreateObject("roMessagePort")
   screen.setMessagePort(m.port)
-  scene = screen.CreateScene("CindaliaVideoExample")
+  scene = screen.CreateScene("VideoScene")
   screen.show()
 
   while(true)
