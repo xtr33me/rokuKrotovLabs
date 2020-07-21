@@ -1,3 +1,4 @@
+
 sub init()
   m.top.backgroundURI = "pkg:/images/cindalia_bg_hd.jpg"
 
@@ -16,6 +17,7 @@ sub init()
 
   m.videolist.observeField("itemFocused", "setvideo")
   m.videolist.observeField("itemSelected", "playvideo")
+
 end sub
 
 sub showvideolist()
@@ -27,13 +29,27 @@ sub setvideo()
   videocontent = m.videolist.content.getChild(m.videolist.itemFocused)
   m.videoposter.uri = videocontent.hdposterurl
   m.videoinfo.text = videocontent.description
+  'm.videoinfo.streamformat = videocontent.streamformat
   m.video.content = videocontent
+
 end sub
 
 sub playvideo()
-  m.video.control = "play"
-  m.video.visible = true
-  m.video.setFocus(true)
+  videocontent = m.videolist.content.getChild(m.videolist.itemFocused)
+  m.videoposter.uri = videocontent.hdposterurl
+  m.videoinfo.text = videocontent.description
+  'm.videoinfo.streamformat = videocontent.streamformat
+  m.video.content = videocontent
+
+
+  m.PlayerTask = CreateObject("roSGNode", "PlayerTask")
+  m.PlayerTask.observeField("state", "taskStateChanged")
+  m.PlayerTask.video = m.video
+  m.PlayerTask.control = "RUN"
+
+  'm.video.control = "play"
+  'm.video.visible = true
+  'm.video.setFocus(true)
 end sub
 
 sub controlvideoplay()
@@ -59,3 +75,21 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
 
   return false
 end function
+
+sub taskStateChanged(event as Object)
+    print "Player: taskStateChanged(), id = "; event.getNode(); ", "; event.getField(); " = "; event.getData()
+    state = event.GetData()
+    if state = "done" or state = "stop"
+        exitPlayer()
+        showvideolist()
+    end if
+end sub
+
+sub exitPlayer()
+    print "Player: exitPlayer()"
+    m.video.control = "stop"
+    m.video.visible = false
+    m.PlayerTask = invalid
+
+    m.top.state = "done"
+end sub
